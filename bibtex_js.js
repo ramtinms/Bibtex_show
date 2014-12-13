@@ -272,6 +272,39 @@ function BibtexDisplay() {
     // return [{"year":"2014","value":"1"},{"year":"2013","value":"2"}];
 
   }
+    this.get_authors = function (input){
+
+    var dic = {};
+    var b = new BibtexParser();
+    b.setInput(input);
+    b.bibtex();
+         // iterate over bibTeX entries
+     var entries = b.getEntries();
+     // console.log(entries);
+    for (var entryKey in entries) {
+      var entry = entries[entryKey];
+
+      entry['AUTHOR'].split(' and ').forEach(function(item) { 
+          item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+         if (dic[item] != null){
+            dic[item] = dic[item] + 1;
+         } else {
+           dic[item] = 1;
+         }
+      });
+      // for each (var item in entry['AUTHOR'].split(' and ')){
+      //    if (dic[item] != null){
+      //       dic[item] = dic[item] + 1;
+      //    } else {
+      //      dic[item] = 1;
+      //    }
+      // }
+     
+    }
+    return dic;
+    // return [{"year":"2014","value":"1"},{"year":"2013","value":"2"}];
+
+  }
 
   this.displayBibtex3 = function(i, o) {
     var b = new BibtexParser();
@@ -392,7 +425,7 @@ function BibtexDisplay() {
   }
 
 
-  this.displayBibtex = function(input, output, year) {
+  this.displayBibtex = function(input, output, filter_type, filter_value) {
     // parse bibtex input
 
 
@@ -452,10 +485,18 @@ function BibtexDisplay() {
         tpl.find("span:not(a)." + key.toLowerCase()).html(this.fixValue(value));
         tpl.find("a." + key.toLowerCase()).attr('href', this.fixValue(value));
       }
-      if (year != 'all'){
-        if (entry['YEAR'] == year){
-        output.append(tpl);
-       }
+      if (filter_type != 'non'){
+        if (filter_type == 'YEAR'){
+          if (entry['YEAR'] == filter_value){
+             output.append(tpl);
+          }
+        }
+        if (filter_type == 'AUTHORS'){
+           if (entry['AUTHOR'].indexOf(filter_value) > -1){
+             output.append(tpl);
+          }
+        }
+        
       }else{
         output.append(tpl);
       }

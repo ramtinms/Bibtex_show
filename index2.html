@@ -10,16 +10,20 @@
 
 <script type="text/javascript">
 bibtex_reader = new BibtexDisplay()
-function get_years(){
-  years = bibtex_reader.get_years($("#bibtex_input").val());
+function get_authors(){
+  years = bibtex_reader.get_authors($("#bibtex_input").val());
   // years = [{"year":"2014","value":"1"},{"year":"2013","value":"2"}]
   $.each(years, function (key, value) {
-    $('.years').append('<button class="btn years_btn btn-primary" type="button" value=\''+key+'\' > '+key+' <span class="badge">'+value+'</span> </button> ');
+    $('.panel-title').append('<button class="btn authors_btn btn-primary" type="button" value=\''+key+'\' > '+key+' <span class="badge">'+value+'</span> </button> ');
   });
-  $('.years_btn').click(function() {
+  $('.authors_btn').click(function() {
               $(".bibtex_template").hide();
-              (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),'YEAR',$(this).val());
+              (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),'AUTHORS',$(this).val());
         });
+  // $('.years_btn').click(function() {
+  //             $(".bibtex_template").hide();
+  //             (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),'YEAR',$(this).val());
+  //       });
 }
 
 function bibtex_js_draw() {
@@ -31,7 +35,7 @@ function bibtex_js_draw() {
 $(document).ready( function() {
   // $('.years').append('<button class="btn btn-primary" type="button" value=\'2012\' onclick="bibtex_js_draw()"> 2012 </button> ');
   $("#bibtex_input").load( "publications.bib",   bibtex_js_draw );
-  $("#bibtex_input").load( "publications.bib",   get_years );
+  $("#bibtex_input").load( "publications.bib",   get_authors );
   
 } );
 </script>
@@ -95,7 +99,7 @@ $(document).ready( function() {
 <ol reversed>
   <div class="panel panel-info">
   <div class="panel-heading">
-    <h3 class="years panel-title">Publications     
+    <h3 class="panel-title">Publications     
 
 <button class="btn btn-primary" type="button" value='all' onclick="bibtex_js_draw()">
   All <!-- <span class="badge">4</span> -->
