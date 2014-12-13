@@ -14,6 +14,14 @@
 //  value -> value_quotes | value_braces | key;
 //  value_quotes -> '"' .*? '"'; // not quite
 //  value_braces -> '{' .*? '"'; // not quite
+function author_tex_reformat(input){
+    if (input.indexOf(",") > -1){
+      return input.split(',')[1] + " " + input.split(',')[0];
+    } else{ 
+      return input;
+    }
+  }
+
 function BibtexParser() {
   this.pos = 0;
   this.input = "";
@@ -286,6 +294,7 @@ function BibtexDisplay() {
 
       entry['AUTHOR'].split(' and ').forEach(function(item) { 
           item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+          item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
          if (dic[item] != null){
             dic[item] = dic[item] + 1;
          } else {
@@ -305,6 +314,7 @@ function BibtexDisplay() {
     // return [{"year":"2014","value":"1"},{"year":"2013","value":"2"}];
 
   }
+
 
   this.displayBibtex3 = function(i, o) {
     var b = new BibtexParser();
@@ -492,9 +502,13 @@ function BibtexDisplay() {
           }
         }
         if (filter_type == 'AUTHORS'){
-           if (entry['AUTHOR'].indexOf(filter_value) > -1){
-             output.append(tpl);
-          }
+              entry['AUTHOR'].split(' and ').forEach(function(item) { 
+                 item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                 item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                if (item.indexOf(filter_value) > -1){
+                   output.append(tpl);
+                }
+             });
         }
         
       }else{
