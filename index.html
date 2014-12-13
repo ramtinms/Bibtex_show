@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<HEAD>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf-8">
+<script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">
+<script type="text/javascript" src="bootstrap/bootstrap.js"></script>  
+<script type="text/javascript" src="bibtex_js.js"></script>  
+
+<script type="text/javascript">
+bibtex_reader = new BibtexDisplay()
+function get_years(){
+  years = bibtex_reader.get_years($("#bibtex_input").val());
+  // years = [{"year":"2014","value":"1"},{"year":"2013","value":"2"}]
+  $.each(years, function (key, value) {
+    $('.years').append('<button class="btn btn-primary" type="button" value=\''+key+'\' > '+key+' <span class="badge">'+value+'</span> </button> ');
+  });
+  $('.btn').click(function() {
+              $(".bibtex_template").hide();
+              (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),$(this).val());
+        });
+}
+
+function bibtex_js_draw() {
+  year="all"
+  $(".bibtex_template").hide();
+  bibtex_reader.displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),year);
+}
+
+$(document).ready( function() {
+  // $('.years').append('<button class="btn btn-primary" type="button" value=\'2012\' onclick="bibtex_js_draw()"> 2012 </button> ');
+  $("#bibtex_input").load( "publications.bib",   bibtex_js_draw );
+  $("#bibtex_input").load( "publications.bib",   get_years );
+  
+} );
+</script>
+</HEAD>
+
+<body >
+<textarea id="bibtex_input" style="display:none;"> 
+</textarea>
+
+
+<div class="main">
+<div class="bibtex_template"  style="display:none; padding:  0.8em;">
+
+<li style="padding:  0.2em;">
+  <span>
+    <span class="if title" style="font-weight: bold;">
+      <span class="title"></span>     
+      <br>
+    </span>
+    <span class="author"></span>.<br>
+    <span class="if booktitle" style="font-style: italic;">
+      <span class="booktitle"></span>,
+      <span class="if address" style="font-style: normal;">
+  <span class="address"></span>
+      </span>     
+    </span>
+    <span class="if journal" style="font-style: italic;">
+      <span class="journal"></span>
+    </span>
+    <span style="if publisher">
+      <span class="publisher"></span>
+    </span>
+    <span style="if school">
+      <span class="school"></span>
+    </span>
+    <span class="if volume">
+      <span class="volume"></span>
+      <span class="if number">
+  (<span class="number"></span>)
+      </span>
+      <span class="if pages">
+  :<span class="pages"></span>
+      </span>
+    </span>
+    <span class="if edition">
+      <span class="edition"></span> ed.,
+    </span>
+    <span class="year"></span>
+  </span>
+  
+  <span class="if url">
+    <span class="label label-primary"><a class="url" style="color: #FFFFFF;">[URL]</a></span>
+    
+  </span>
+  <span class="if pdf">
+    <a class="pdf" style="">[PDF]</a>
+  </span>
+
+</div>
+
+<ol reversed>
+  <div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="years panel-title">Publications     
+
+<button class="btn btn-primary" type="button" value='all' onclick="bibtex_js_draw()">
+  All <!-- <span class="badge">4</span> -->
+</button> 
+
+    </h3>
+  </div>
+  <div class="panel-body">
+    
+    <div id="bibtex_display"></div>
+  </div>
+
+
+
+</div>
+
+</div>
+</ol>
+
+</table>
+</table>
+
+
+</div>
+
+
+</BODY>
+</HTML>
