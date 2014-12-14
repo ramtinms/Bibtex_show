@@ -181,6 +181,8 @@ function BibtexParser() {
   }
 
   this.key_value_list = function() {
+    // this.entries[this.currentEntry]['bibtex'] = this. ????????;
+    
     var kv = this.key_equals_value();
     this.entries[this.currentEntry][kv[0]] = kv[1];
     while (this.tryMatch(",")) {
@@ -192,13 +194,16 @@ function BibtexParser() {
       kv = this.key_equals_value();
       this.entries[this.currentEntry][kv[0]] = kv[1];
     }
+    // this.entries[this.currentEntry]['bibtex'] = this.input.substring(this.pos,lastpos);
+
   }
 
   this.entry_body = function() {
     this.currentEntry = this.key();
-    this.entries[this.currentEntry] = new Object();    
+    this.entries[this.currentEntry] = new Object(); 
     this.match(",");
     this.key_value_list();
+
   }
 
   this.directive = function () {
@@ -224,7 +229,9 @@ function BibtexParser() {
   }
 
   this.bibtex = function() {
+    var is_entry =false;
     while(this.tryMatch("@")) {
+      var lastpos = this.pos;
       var d = this.directive().toUpperCase();
       this.match("{");
       if (d == "@STRING") {
@@ -235,8 +242,13 @@ function BibtexParser() {
         this.comment();
       } else {
         this.entry();
+        is_entry=true;
       }
       this.match("}");
+      // if (is_entry == true) {
+        this.entries[this.currentEntry]['BIBTEX'] = this.input.substring(this.pos,lastpos);
+        // is_entry = false;
+        // }
     }
   }
 }
@@ -448,6 +460,7 @@ function BibtexDisplay() {
 
     // iterate over bibTeX entries
     var entries = b.getEntries();
+    console.log(entries);
     for (var entryKey in entries) {
       var entry = entries[entryKey];
       
@@ -489,10 +502,19 @@ function BibtexDisplay() {
       } while (true);
       
       // fill in remaining fields 
+      
+      tpl.find("div.bibtexdata").attr('id', "bib"+entryKey.replace(/\:/g,""));
+      tpl.find("button.bibtex_but").attr('data-target', "#bib"+entryKey.replace(/\:/g,""));
+
+      tpl.find("div.abstractdata").attr('id', "abs"+entryKey.replace(/\:/g,""));
+      tpl.find("button.abstract_but").attr('data-target', "#abs"+entryKey.replace(/\:/g,""));     
+
       for (var index in keys) {
         var key = keys[index];
         var value = entry[key] || "";
         tpl.find("span:not(a)." + key.toLowerCase()).html(this.fixValue(value));
+        tpl.find("button:not(a)." + key.toLowerCase()).attr('data-content', this.fixValue(value));
+        // tpl.find("span:not(a).abstract").html(this.key);
         tpl.find("a." + key.toLowerCase()).attr('href', this.fixValue(value));
       }
       if (filter_type != 'non'){
