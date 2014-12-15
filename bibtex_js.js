@@ -272,7 +272,7 @@ function BibtexDisplay() {
     return value;
   }
 
-  this.get_years = function (input){
+  this.get_years = function (input,constraints){
 
     var dic = {};
     var b = new BibtexParser();
@@ -281,14 +281,44 @@ function BibtexDisplay() {
          // iterate over bibTeX entries
      var entries = b.getEntries();
      // console.log(entries);
-    for (var entryKey in entries) {
+   for (var entryKey in entries) {
       var entry = entries[entryKey];
-      if (dic[entry['YEAR']] != null){
-        dic[entry['YEAR']] = dic[entry['YEAR']] + 1;
-      } else {
-        dic[entry['YEAR']] = 1;
-      }
+       var approved = true;
+
+        for (var constraint in constraints)  {
+            var key = constraint;
+            var value = constraints[constraint];
+            if (key == 'YEAR'){
+              if (entry['YEAR'] != value){
+                approved=false;
+              }
+            }
+            if (key == 'AUTHOR'){
+                  var author_found =  false;
+                 entry['AUTHOR'].split(' and ').forEach(function(item) { 
+                  item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                  item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                  if (item.indexOf(value) > -1){
+                    author_found = true;
+                  }
+                });
+                 if (author_found == false){
+                    approved=false;
+                 }
+            }
+
+        }
+        if (approved == true){
+          if (dic[entry['YEAR']] != null){
+            dic[entry['YEAR']] = dic[entry['YEAR']] + 1;
+          } else {
+            dic[entry['YEAR']] = 1;
+          }
+
+        }
+
     }
+
     return dic;
     // return [{"year":"2014","value":"1"},{"year":"2013","value":"2"}];
 
@@ -448,10 +478,10 @@ function BibtexDisplay() {
   }
 
 
-  this.displayBibtex = function(input, output, filter_type, filter_value) {
-    // parse bibtex input
+  this.displayBibtex = function(input, output, constraints) {
+    // parse bibtex input - filter_type, filter_value
 
-
+    console.log(constraints);
     var b = new BibtexParser();
     b.setInput(input);
     b.bibtex();
@@ -461,7 +491,7 @@ function BibtexDisplay() {
 
     // iterate over bibTeX entries
     var entries = b.getEntries();
-    console.log(entries);
+    // console.log(entries);
     for (var entryKey in entries) {
       var entry = entries[entryKey];
       
@@ -518,25 +548,64 @@ function BibtexDisplay() {
         // tpl.find("span:not(a).abstract").html(this.key);
         tpl.find("a." + key.toLowerCase()).attr('href', this.fixValue(value));
       }
-      if (filter_type != 'non'){
-        if (filter_type == 'YEAR'){
-          if (entry['YEAR'] == filter_value){
-             output.append(tpl);
-          }
-        }
-        if (filter_type == 'AUTHORS'){
-              entry['AUTHOR'].split(' and ').forEach(function(item) { 
-                 item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                 item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                if (item.indexOf(filter_value) > -1){
-                   output.append(tpl);
-                }
-             });
-        }
-        
-      }else{
+      if (constraints == null) {
+
         output.append(tpl);
+
+      } else {
+        var approved = true;
+
+        for (var constraint in constraints)  {
+            var key = constraint;
+            var value = constraints[constraint];
+            if (key == 'YEAR'){
+              if (entry['YEAR'] != value){
+                approved=false;
+              }
+            }
+            if (key == 'AUTHOR'){
+                  var author_found =  false;
+                 entry['AUTHOR'].split(' and ').forEach(function(item) { 
+                  item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                  item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                  if (item.indexOf(value) > -1){
+                    author_found = true;
+                  }
+                  if (item == value){
+                      
+                  }
+                });
+                 if (author_found == false){
+                    approved=false;
+                 }
+            }
+
+        }
+        if (approved == true){
+          // console.log(entry['AUTHOR']);
+          output.append(tpl);
+        }
+
       }
+      // if (filter_type != 'non'){
+      //   if (filter_type == 'YEAR'){
+      //     if (entry['YEAR'] == filter_value){
+      //        output.append(tpl);
+      //     }
+      //   }
+      //   if (filter_type == 'AUTHORS'){
+      //         entry['AUTHOR'].split(' and ').forEach(function(item) { 
+      //            item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+      //            item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+      //           if (item.indexOf(filter_value) > -1){
+      //              output.append(tpl);
+      //           }
+      //        });
+      //   }
+      // }
+      // else {
+      //    output.append(tpl);
+      // }
       
       tpl.show();
     }
@@ -544,7 +613,6 @@ function BibtexDisplay() {
     // remove old entries
     old.remove();
   }
-
 }
 
 function bibtex_js_draw() {
