@@ -246,7 +246,8 @@ function BibtexParser() {
       }
       this.match("}");
       // if (is_entry == true) {
-        this.entries[this.currentEntry]['BIBTEX'] = this.input.substring(this.pos,lastpos);
+
+        this.entries[this.currentEntry]['BIBTEX'] = this.input.substring(this.pos,lastpos).replace(/\n/g, "<br /> &#160;&#160;").replace(/\}/g," &#125; ").replace(/\{/g," &#123; ");
         // is_entry = false;
         // }
     }
