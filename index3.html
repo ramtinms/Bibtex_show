@@ -9,32 +9,43 @@
 <script type="text/javascript" src="bibtex_js.js"></script>  
 
 <script type="text/javascript">
-$(function () { 
-    $("[data-toggle='tooltip']").tooltip(); 
-});
-
 bibtex_reader = new BibtexDisplay()
-// TODO better structure for constraints
 constraints = {};
+/// Add always constrains here like constrains['AUTHOR']='Anoop Sarkar'
 
-function get_authors(){
-  years = bibtex_reader.get_authors($("#bibtex_input").val());
+function get_years(){
+  years = bibtex_reader.get_years($("#bibtex_input").val(),constraints);
+  authors = bibtex_reader.get_authors($("#bibtex_input").val(),constraints);
   // years = [{"year":"2014","value":"1"},{"year":"2013","value":"2"}]
   $.each(years, function (key, value) {
-    $('.panel-title').append('<button class="btn authors_btn btn-primary" type="button" value=\''+key+'\' > '+key+' <span class="badge">'+value+'</span> </button> ');
+    $('.years').append('<button class="btn years_btn btn-primary" type="button" value=\''+key+'\' > '+key+' <span class="badge">'+value+'</span> </button> ');
   });
-  $('.authors_btn').click(function() {
+ 
+ $.each(authors, function (key, value) {
+    $('.authors').append('<button class="btn author_btn btn-primary" type="button" value=\''+key+'\' > '+key+' <span class="badge">'+value+'</span> </button> ');
+  });
+
+  $('.years_btn').click(function() {
+              $(".bibtex_template").hide();
+              constraints['YEAR']=$(this).val();
+              (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),constraints);
+        });
+
+  $('.author_btn').click(function() {
               $(".bibtex_template").hide();
               constraints['AUTHOR']=$(this).val();
               (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),constraints);
         });
-  // $('.years_btn').click(function() {
-  //             $(".bibtex_template").hide();
-  //             (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),'YEAR',$(this).val());
-  //       });
+  
   $('.allauthors').click(function() {
     $(".bibtex_template").hide();
     delete constraints['AUTHOR'];
+    (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),constraints);
+    });
+
+  $('.allyears').click(function() {
+    $(".bibtex_template").hide();
+    delete constraints['YEAR'];
     (new BibtexDisplay()).displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),constraints);
     });
 }
@@ -42,22 +53,22 @@ function get_authors(){
 function bibtex_js_draw() {
   year="all"
   $(".bibtex_template").hide();
-  bibtex_reader.displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),constraints);//'non',year);
+  bibtex_reader.displayBibtex($("#bibtex_input").val(), $("#bibtex_display"),constraints);
 }
 
 $(document).ready( function() {
   // $('.years').append('<button class="btn btn-primary" type="button" value=\'2012\' onclick="bibtex_js_draw()"> 2012 </button> ');
   $("#bibtex_input").load( "publications.bib",   bibtex_js_draw );
-  $("#bibtex_input").load( "publications.bib",   get_authors );
+  $("#bibtex_input").load( "publications.bib",   get_years );
   
 } );
 </script>
 </HEAD>
 
 <body >
-
 <textarea id="bibtex_input" style="display:none;"> 
 </textarea>
+
 
 
 <div class="main">
@@ -141,14 +152,24 @@ $(document).ready( function() {
 <ol reversed>
   <div class="panel panel-info">
   <div class="panel-heading">
-    <h3 class="panel-title">Publications     
+    <h2 class="panel-title">Publications</h2>  
 
-<button class="btn allauthors btn-primary" type="button" value='all'">
-  All <!-- <span class="badge">4</span> -->
-</button> 
-
-    </h3>
+  </div>   
+<div class="panel-heading">
+    <h3 class="years panel-title">Years : 
+    <button class="btn allyears btn-primary" type="button" value='all'>
+    All <!-- <span class="badge">4</span> -->
+  </button> 
+  </h3>  
   </div>
+<div class="panel-heading">
+    <h3 class="authors panel-title">Authors : 
+    <button class="btn allauthors btn-primary" type="button" value='all'>
+    All <!-- <span class="badge">4</span> -->
+  </button> 
+  </h3>  
+  </div>
+
   <div class="panel-body">
     
     <div id="bibtex_display"></div>
