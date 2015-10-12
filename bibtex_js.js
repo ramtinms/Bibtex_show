@@ -295,13 +295,23 @@ function BibtexDisplay() {
             }
             if (key == 'AUTHOR'){
                   var author_found =  false;
-                 entry['AUTHOR'].split(' and ').forEach(function(item) { 
-                  item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                  item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                  if (item.indexOf(value) > -1){
-                    author_found = true;
+                  if (entry['AUTHOR'].indexOf(' and ') >-1) {
+                        entry['AUTHOR'].split(' and ').forEach(function(item) { 
+                          item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          if (item.indexOf(value) > -1){
+                            author_found = true;
+                          }
+                        });
+
+
+                  } else {
+                          item = entry['AUTHOR'].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          if (item.indexOf(value) > -1){
+                            author_found = true;
+                          }
                   }
-                });
                  if (author_found == false){
                     approved=false;
                  }
@@ -536,9 +546,13 @@ function BibtexDisplay() {
       
       tpl.find("div.bibtexdata").attr('id', "bib"+entryKey.replace(/\:/g,""));
       tpl.find("button.bibtex_but").attr('data-target', "#bib"+entryKey.replace(/\:/g,""));
+      tpl.find("button.bibtex_but").attr('data-target', "#bib"+entryKey.replace(/\:/g,""));
+      tpl.find("button.bibtex_but").attr('onclick', "mytoggle(\'bib"+entryKey.replace(/\:/g,"")+"\')");
 
       tpl.find("div.abstractdata").attr('id', "abs"+entryKey.replace(/\:/g,""));
       tpl.find("button.abstract_but").attr('data-target', "#abs"+entryKey.replace(/\:/g,""));     
+      tpl.find("button.abstract_but").attr('onclick', "mytoggle(\'abs"+entryKey.replace(/\:/g,"")+"\')");
+
 
       for (var index in keys) {
         var key = keys[index];
@@ -565,16 +579,34 @@ function BibtexDisplay() {
             }
             if (key == 'AUTHOR'){
                   var author_found =  false;
-                 entry['AUTHOR'].split(' and ').forEach(function(item) { 
-                  item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                  item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                  if (item.indexOf(value) > -1){
-                    author_found = true;
+                  // alert(entry['AUTHOR']);
+                 if (entry['AUTHOR'].indexOf("and") >-1) {
+                        entry['AUTHOR'].split(' and ').forEach(function(item) { 
+                          item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          if (item.indexOf(value) > -1){
+                            author_found = true;
+                          }
+                        });
+
+
+                  } else {
+                          item = entry['AUTHOR'].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                          if (item.indexOf(value) > -1){
+                            author_found = true;
+                          }
                   }
-                  if (item == value){
+                 // entry['AUTHOR'].split(' and ').forEach(function(item) { 
+                 //  item = item.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                 //  item = author_tex_reformat(item).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                 //  if (item.indexOf(value) > -1){
+                 //    author_found = true;
+                 //  }
+                  // if (item == value){
                       
-                  }
-                });
+                  // }
+                // });
                  if (author_found == false){
                     approved=false;
                  }
